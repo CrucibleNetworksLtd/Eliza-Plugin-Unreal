@@ -1,0 +1,40 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.1",
+	"FriendlyName": "Eliza",
+	"Description": "",
+	"Category": "Agents",
+	"CreatedBy": "Crucible",
+	"CreatedByURL": "https://crucible.network/",
+	"DocsURL": "https://cruciblenetworksltd.github.io/Eliza-Plugin-Docs/",
+	"FabURL": "com.epicgames.launcher://ue/Fab/product/e82dfb26-a9bb-4e98-8068-42c7e78f561e",
+	"SupportURL": "https://discord.gg/openmetadao",
+	"EngineVersion": "5.5",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"bHasExplicitPlatforms": true,
+	"SupportedTargetPlatforms": [
+		"Win64"
+	],
+	"Modules": [
+		{
+			"Name": "Eliza",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
+		},
+		{
+			"Name": "ElizaEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
+		}
+	]
+}
