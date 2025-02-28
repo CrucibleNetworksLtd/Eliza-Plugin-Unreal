@@ -13,6 +13,7 @@
 #include "Misc/EngineVersionComparison.h"
 #include "Eliza.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Engine/GameInstance.h"
 #include "ElizaHttpHelperLibrary.generated.h"
 
 UCLASS()
@@ -46,7 +47,7 @@ public:
 				if (
 					World && //get the world
 					World->GetGameInstance()) { //if we actually got a world, get the game instance
-					UElizaHttpHelperLibrary* ElizaSubsystem = World->GetGameInstance()->GetSubsystem<UElizaHttpHelperLibrary>();
+					UElizaHttpHelperLibrary* ElizaSubsystem = UGameInstance::GetSubsystem<UElizaHttpHelperLibrary>(World->GetGameInstance());
 					if (ElizaSubsystem) {
 						ElizaSubsystem->ActiveRequests.Add(HttpRequest);
 					}

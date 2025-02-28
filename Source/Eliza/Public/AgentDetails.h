@@ -213,7 +213,7 @@ struct FAgentDetailsCharacter
           }
       }
 
-      Json->SetArrayField("messageExamples", MessageExamplesArray);
+      Json->SetArrayField(TEXT("messageExamples"), MessageExamplesArray);
 
       return Json;
   }
@@ -285,7 +285,7 @@ struct FAgentDetails
           }
       }
 
-      Json->GetObjectField("character")->SetArrayField("messageExamples", MessageExamplesArray);
+      Json->GetObjectField(TEXT("character"))->SetArrayField(TEXT("messageExamples"), MessageExamplesArray);
 
       return Json;
   }
