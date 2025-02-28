@@ -55,12 +55,12 @@ void UGetAgentCharacter::GetAgentCharacter_HttpRequestComplete(FHttpRequestPtr H
 		if (FJsonSerializer::Deserialize(Reader, JsonValue)) {
 
 			FAgentDetails AgentDetails = FAgentDetails(HttpResponse->GetContentAsString());
-			OnGetAgentCharacterCompleted.Broadcast(true, AgentDetails);
+			OnGetAgentCharacterCompleted.Broadcast(true, AgentDetails.character);
 
 			return;
 		}
 	}
 
-	OnGetAgentCharacterCompleted.Broadcast(false, FAgentDetails());
+	OnGetAgentCharacterCompleted.Broadcast(false, FAgentDetailsCharacter());
 	return;
 }

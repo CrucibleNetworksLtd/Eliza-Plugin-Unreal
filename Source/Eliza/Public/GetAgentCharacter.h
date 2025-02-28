@@ -25,7 +25,7 @@ public:
 
 	virtual void Activate() override;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGetAgentCharacterCompleted, bool, Success, FAgentDetails, Agent);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGetAgentCharacterCompleted, bool, Success, FAgentDetailsCharacter, Character);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnGetAgentCharacterCompleted OnGetAgentCharacterCompleted;

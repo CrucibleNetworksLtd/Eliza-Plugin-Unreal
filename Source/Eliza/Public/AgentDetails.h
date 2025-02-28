@@ -248,16 +248,17 @@ struct FAgentDetailsCharacter
   }
 };
 
-USTRUCT(Category="JSON|AgentDetails", BlueprintType)
+//This is effective a hidden type, used only for deserialzing json returned from eliza to pull out the FAgentDetailsCharacter part.
+USTRUCT()
 struct FAgentDetails
 {
 
   GENERATED_BODY()
 
-  UPROPERTY(Category="JSON|AgentDetails|AgentDetail", EditAnywhere, BlueprintReadWrite)
+  UPROPERTY()
   FString id;
 
-  UPROPERTY(Category="JSON|AgentDetails|AgentDetail", EditAnywhere, BlueprintReadWrite)
+  UPROPERTY()
   FAgentDetailsCharacter character;
 
   FAgentDetails() {};
