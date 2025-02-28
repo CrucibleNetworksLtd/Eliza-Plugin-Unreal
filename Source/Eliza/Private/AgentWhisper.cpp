@@ -63,8 +63,8 @@ void UAgentWhisper::AgentWhisper_HttpRequestComplete(FHttpRequestPtr HttpRequest
 		UE_LOG(LogEliza, Display, TEXT("Message Agent response: %s"), *ResponseString);
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseString);
 		if (FJsonSerializer::Deserialize(Reader, JsonValue)) {
-			if (JsonValue->AsObject()->HasField("error")) {
-				FString ErrorDetails = JsonValue->AsObject()->GetStringField("details");
+			if (JsonValue->AsObject()->HasField(TEXT("error"))) {
+				FString ErrorDetails = JsonValue->AsObject()->GetStringField(TEXT("details"));
 				UE_LOG(LogEliza, Error, TEXT("Eliza error: %s"), *HttpResponse->GetContentAsString());
 				if (ErrorDetails.Contains("api")) {
 					UE_LOG(LogEliza, Error, TEXT("Error doing TTS. Your Eliza instance is missing its ElevenLabs API key."));
