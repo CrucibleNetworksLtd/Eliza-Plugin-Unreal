@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Interfaces/IHttpRequest.h"
+#include "ElizaInstance.h"
 #include "GetAgents.generated.h"
 
 USTRUCT(BlueprintType)
@@ -40,7 +41,7 @@ public:
 	 * Returns an array of all the agents running in your Eliza instance.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
-	static UGetAgents* GetAgents();
+	static UGetAgents* GetAgents(UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;
 
@@ -52,4 +53,6 @@ private:
 	void GetAgents_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
 
 	FString AgentId, Message;
+
+	UElizaInstance* ElizaInstance;
 };

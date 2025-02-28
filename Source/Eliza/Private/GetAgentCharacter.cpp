@@ -8,23 +8,40 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
-UGetAgentCharacter* UGetAgentCharacter::GetAgentCharacter(FString AgentId)
+UGetAgentCharacter* UGetAgentCharacter::GetAgentCharacter(FString _AgentId, UElizaInstance* _ElizaInstance)
 {
 	UGetAgentCharacter* BlueprintNode = NewObject<UGetAgentCharacter>();
-	BlueprintNode->AgentId = AgentId;
+	BlueprintNode->AgentId = _AgentId;
+	BlueprintNode->ElizaInstance = _ElizaInstance;
 	return BlueprintNode;
 }
 
 void UGetAgentCharacter::Activate()
 {
-	FString requestURL = UElizaHttpHelperLibrary::GetElizaStarterUrl() + "/Agents/" + AgentId;
+	if (!ElizaInstance) { //Prevent continuing if we don't have an eliza instance.
+		UE_LOG(LogEliza, Error, TEXT("You must supply an Eliza Instance to comminicate with. You can create them in the content browser, or use the CreateElizaInstance function."));
+		return;
+	}
+
+	if (AgentId.IsEmpty()) {
+		UE_LOG(LogEliza, Error, TEXT("You must supply an Eliza AgentID to comminicate with. Try finding the ones in this Eliza instance with the GetAgents function."));
+		return;
+	}
+
+	FString requestURL = ElizaInstance->GetAPIUrl() + "Agents/" + AgentId;
+
 	TArray<TPair<FString, FString>> Headers;
 	Headers.Add(TPair<FString, FString>{"content-type", "application/json"});
+
+	Headers.Append(ElizaInstance->RequiredHeaders());
 	
 	UElizaHttpHelperLibrary::ExecuteHttpRequest<UGetAgentCharacter>(
 		this,
 		&UGetAgentCharacter::GetAgentCharacter_HttpRequestComplete,
-		requestURL
+		requestURL,
+		"GET",
+		60.0F,
+		Headers
 	);
 }
 

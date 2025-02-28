@@ -8,20 +8,34 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
-UGetAgents* UGetAgents::GetAgents()
+UGetAgents* UGetAgents::GetAgents(UElizaInstance* _ElizaInstance)
 {
 	UGetAgents* BlueprintNode = NewObject<UGetAgents>();
+	BlueprintNode->ElizaInstance = _ElizaInstance;
 	return BlueprintNode;
 }
 
 void UGetAgents::Activate()
 {
-	FString requestURL = UElizaHttpHelperLibrary::GetElizaStarterUrl() + "/Agents";
+	if (!ElizaInstance) { //Prevent continuing if we don't have an eliza instance.
+		UE_LOG(LogEliza, Error, TEXT("You must supply an Eliza Instance to comminicate with. You can create them in the content browser, or use the CreateElizaInstance function."));
+		return;
+	}
+
+	FString requestURL = ElizaInstance->GetAPIUrl() + "Agents";
+
+	TArray<TPair<FString, FString>> Headers;
+	Headers.Add(TPair<FString, FString>{"content-type", "application/json"});
+
+	Headers.Append(ElizaInstance->RequiredHeaders());
 
 	UElizaHttpHelperLibrary::ExecuteHttpRequest<UGetAgents>(
 		this,
 		&UGetAgents::GetAgents_HttpRequestComplete,
-		requestURL
+		requestURL,
+		"GET",
+		60.0F,
+		Headers
 	);
 }
 

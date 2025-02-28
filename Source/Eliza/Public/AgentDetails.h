@@ -197,6 +197,26 @@ struct FAgentDetailsCharacter
     id = _id;
   
   }
+
+  TSharedPtr<FJsonObject> FAgentDetailsCharacterToJson() {
+      TSharedPtr<FJsonObject> Json = FJsonObjectConverter::UStructToJsonObject<FAgentDetailsCharacter>(*this);
+
+      TArray<TSharedPtr<FJsonValue>> MessageExamplesArray;
+      for (auto Example : this->messageExamples) {
+          TArray<TSharedPtr<FJsonValue>> ExampleArray;
+          for (auto Message : Example.Combination) {
+              auto MessageJson = FJsonObjectConverter::UStructToJsonObject<FAgentDetailsCharacterMessageExample>(Message);
+              ExampleArray.Add(MakeShareable(new FJsonValueObject(MessageJson)));
+          }
+          if (ExampleArray.Num() > 0) {
+              MessageExamplesArray.Add(MakeShareable(new FJsonValueArray(ExampleArray)));
+          }
+      }
+
+      Json->SetArrayField("messageExamples", MessageExamplesArray);
+
+      return Json;
+  }
   
   FAgentDetailsCharacter(FString _json_) {
       FAgentDetailsCharacter CharacterStruct;
@@ -248,14 +268,25 @@ struct FAgentDetails
     character = _character;
   
   }
-  
-  /* Don't Forget to setup your project
-  Add #include "Runtime/JsonUtilities/Public/JsonObjectConverter.h" in 
-  file with this structs.
-  Also you need add "Json", "JsonUtilities" in Build.cs */
 
   TSharedPtr<FJsonObject> FAgentDetailsToJson() {
-      return FJsonObjectConverter::UStructToJsonObject<FAgentDetails>(*this);
+      TSharedPtr<FJsonObject> Json = FJsonObjectConverter::UStructToJsonObject<FAgentDetails>(*this);
+      
+      TArray<TSharedPtr<FJsonValue>> MessageExamplesArray;
+      for (auto Example : this->character.messageExamples) {
+          TArray<TSharedPtr<FJsonValue>> ExampleArray;
+          for (auto Message : Example.Combination) {
+              auto MessageJson = FJsonObjectConverter::UStructToJsonObject<FAgentDetailsCharacterMessageExample>(Message);
+              ExampleArray.Add(MakeShareable(new FJsonValueObject(MessageJson)));
+          }
+          if (ExampleArray.Num() > 0) {
+              MessageExamplesArray.Add(MakeShareable(new FJsonValueArray(ExampleArray)));
+          }
+      }
+
+      Json->GetObjectField("character")->SetArrayField("messageExamples", MessageExamplesArray);
+
+      return Json;
   }
 
   FAgentDetails(FString _json_){

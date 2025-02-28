@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Interfaces/IHttpRequest.h"
+#include "ElizaInstance.h"
 #include "MessageAgent.generated.h"
 
 
@@ -20,7 +21,7 @@ public:
 	 * @param Message The message to send to the agent.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
-	static UMessageAgent* MessageAgent(FString AgentId, FString Message);
+	static UMessageAgent* MessageAgent(FString AgentId, FString Message, UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;
 
@@ -32,4 +33,6 @@ private:
 	void MessageAgent_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
 
 	FString AgentId, Message;
+
+	UElizaInstance* ElizaInstance;
 };

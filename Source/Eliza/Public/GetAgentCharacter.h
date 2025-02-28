@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Interfaces/IHttpRequest.h"
 #include "AgentDetails.h"
+#include "ElizaInstance.h"
 #include "GetAgentCharacter.generated.h"
 
 
@@ -20,7 +21,7 @@ public:
 	 * @param AgentId The ID string of the agent to get the character data of.
 	 */
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
-	static UGetAgentCharacter* GetAgentCharacter(FString AgentId);
+	static UGetAgentCharacter* GetAgentCharacter(FString AgentId, UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;
 
@@ -32,4 +33,6 @@ private:
 	void GetAgentCharacter_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
 
 	FString AgentId;
+
+	UElizaInstance* ElizaInstance;
 };

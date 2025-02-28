@@ -8,19 +8,33 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
-UMessageAgent* UMessageAgent::MessageAgent(FString _AgentId, FString _Message)
+UMessageAgent* UMessageAgent::MessageAgent(FString _AgentId, FString _Message, UElizaInstance* _ElizaInstance)
 {
 	UMessageAgent* BlueprintNode = NewObject<UMessageAgent>();
 	BlueprintNode->AgentId = _AgentId;
 	BlueprintNode->Message = _Message;
+	BlueprintNode->ElizaInstance = _ElizaInstance;
 	return BlueprintNode;
 }
 
 void UMessageAgent::Activate()
 {
-	FString requestURL = UElizaHttpHelperLibrary::GetElizaStarterUrl() + "/" + AgentId + "/message";
+	if (!ElizaInstance) { //Prevent continuing if we don't have an eliza instance.
+		UE_LOG(LogEliza, Error, TEXT("You must supply an Eliza Instance to comminicate with. You can create them in the content browser, or use the CreateElizaInstance function."));
+		return;
+	}
+
+	if (AgentId.IsEmpty()) {
+		UE_LOG(LogEliza, Error, TEXT("You must supply an Eliza AgentID to comminicate with. Try finding the ones in this Eliza instance with the GetAgents function."));
+		return;
+	}
+
+	FString requestURL = ElizaInstance->GetAPIUrl() + AgentId + "/message";
+
 	TArray<TPair<FString, FString>> Headers;
 	Headers.Add(TPair<FString, FString>{"content-type", "application/json"});
+
+	Headers.Append(ElizaInstance->RequiredHeaders());
 
 	TSharedPtr<FJsonObject> BodyContentJsonObject = MakeShareable(new FJsonObject);
 	BodyContentJsonObject->SetStringField(TEXT("text"), Message);
@@ -48,13 +62,18 @@ void UMessageAgent::MessageAgent_HttpRequestComplete(FHttpRequestPtr HttpRequest
 		UE_LOG(LogEliza, Display, TEXT("Message Agent response: %s"), *ResponseString);
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseString);
 		if (FJsonSerializer::Deserialize(Reader, JsonValue)) {
-			TSharedPtr<FJsonValue> MessageData = JsonValue->AsArray()[0];
-			FString User = MessageData->AsObject()->GetStringField(TEXT("user"));
-			FString Text = MessageData->AsObject()->GetStringField(TEXT("text"));
-			FString Action = MessageData->AsObject()->GetStringField(TEXT("action"));
+			if (JsonValue->Type == EJson::Array) {
+				TSharedPtr<FJsonValue> MessageData = JsonValue->AsArray()[0];
+				FString User = MessageData->AsObject()->GetStringField(TEXT("user"));
+				FString Text = MessageData->AsObject()->GetStringField(TEXT("text"));
+				FString Action = MessageData->AsObject()->GetStringField(TEXT("action"));
 
-			OnMessageAgentCompleted.Broadcast(true, User, Text, Action);
-			return;
+				OnMessageAgentCompleted.Broadcast(true, User, Text, Action);
+				return;
+			}
+			else {
+				//an error happened @TODO handle it
+			}
 		}
 	}
 
