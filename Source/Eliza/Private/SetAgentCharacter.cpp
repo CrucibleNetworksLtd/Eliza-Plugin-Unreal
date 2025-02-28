@@ -44,10 +44,9 @@ void USetAgentCharacter::Activate()
 	FString JsonOutput;
 	TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&JsonOutput);
 	auto CharacterJson = AgentCharacter.FAgentDetailsCharacterToJson().ToSharedRef();
-	//CharacterJson->RemoveField("id");
-	CharacterJson->SetArrayField("clients", TArray<TSharedPtr<FJsonValue>>());
-	CharacterJson->SetArrayField("plugins", TArray<TSharedPtr<FJsonValue>>());
-	CharacterJson->SetStringField("id", AgentID);
+	CharacterJson->SetArrayField(TEXT("clients"), TArray<TSharedPtr<FJsonValue>>());
+	CharacterJson->SetArrayField(TEXT("plugins"), TArray<TSharedPtr<FJsonValue>>());
+	CharacterJson->SetStringField(TEXT("id"), AgentID);
 	FJsonSerializer::Serialize(CharacterJson, Writer);
 	
 	UE_LOG(LogTemp, Display, TEXT("%s"), *JsonOutput);
@@ -71,7 +70,7 @@ void USetAgentCharacter::SetAgentCharacter_HttpRequestComplete(FHttpRequestPtr H
 		UE_LOG(LogEliza, Display, TEXT("Set Agent Character response: %s"), *ResponseString);
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseString);
 		if (FJsonSerializer::Deserialize(Reader, JsonValue)) {
-			OnSetAgentCharacterCompleted.Broadcast(true, JsonValue->AsObject()->GetStringField("id"));
+			OnSetAgentCharacterCompleted.Broadcast(true, JsonValue->AsObject()->GetStringField(TEXT("id")));
 
 			return;
 		}
