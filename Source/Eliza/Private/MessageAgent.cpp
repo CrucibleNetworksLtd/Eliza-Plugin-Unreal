@@ -8,11 +8,12 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
-UMessageAgent* UMessageAgent::MessageAgent(FString _AgentId, FString _Message, UElizaInstance* _ElizaInstance)
+UMessageAgent* UMessageAgent::MessageAgent(FString _AgentId, FString _Message, FString _Speaker, UElizaInstance* _ElizaInstance)
 {
 	UMessageAgent* BlueprintNode = NewObject<UMessageAgent>();
 	BlueprintNode->AgentId = _AgentId;
 	BlueprintNode->Message = _Message;
+	BlueprintNode->Speaker = _Speaker;
 	BlueprintNode->ElizaInstance = _ElizaInstance;
 	return BlueprintNode;
 }
@@ -38,6 +39,11 @@ void UMessageAgent::Activate()
 
 	TSharedPtr<FJsonObject> BodyContentJsonObject = MakeShareable(new FJsonObject);
 	BodyContentJsonObject->SetStringField(TEXT("text"), Message);
+	if (!Speaker.IsEmpty()) {
+		BodyContentJsonObject->SetStringField(TEXT("userId"), Speaker);
+		BodyContentJsonObject->SetStringField(TEXT("userName"), Speaker);
+		BodyContentJsonObject->SetStringField(TEXT("name"), Speaker);
+	}
 	FString JsonOutput;
 	TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&JsonOutput);
 	FJsonSerializer::Serialize(BodyContentJsonObject.ToSharedRef(), Writer);
