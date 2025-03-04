@@ -45,7 +45,14 @@ public:
 	UElizaInstance() {};
 
 	UElizaInstance(FElizaInstanceStruct ElizaInstance);
-
+	
+	/**
+	 * Creates an ElizaInstance from given parameters. If you are using Fleek, a FleekAPIKey and FleekAgentId are required, but the LocationURL is not. If you're not using Fleek, only a LocationURL is required.
+	 * @param LocationURL The URL of where the Eliza instance is. Usually "http://localhost:3000" if you're self hosting. Not used if you specify Fleek in the APIType.
+	 * @param APIType If this is a normal Eliza instance or a Fleek Eliza instance.
+	 * @param FleekAPIKey A Fleek API key. NOT a bearer token!
+	 * @param FleekAgentId The Fleek agent ID. Not the Fleek Eliza agent ID!
+	 */
 	UFUNCTION(BlueprintPure, Category = "Eliza|Instance")
 	static UElizaInstance* CreateElizaInstance(FString LocationURL, EElizaAPIType APIType, FString FleekAPIKey, FString FleekAgentId);
 
