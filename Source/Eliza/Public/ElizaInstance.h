@@ -18,15 +18,19 @@ struct ELIZA_API FElizaInstanceStruct
 {
 	GENERATED_BODY()
 
+	//The URL of where the Eliza instance is. Usually "http://localhost:3000" if you're self hosting. Not used if you specify Fleek in the APIType.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eliza|Instance")
 	FString LocationURL;
 
+	//If this is a normal Eliza instance or a Fleek Eliza instance.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eliza|Instance")
 	EElizaAPIType APIType;
 
+	//A Fleek API key. NOT a bearer token!
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eliza|Instance")
 	FString FleekAPIKey;
-
+	
+	//The Fleek agent ID. Not the Fleek Eliza agent ID!
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Eliza|Instance")
 	FString FleekAgentId;
 };
