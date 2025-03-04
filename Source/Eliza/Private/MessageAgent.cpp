@@ -69,12 +69,16 @@ void UMessageAgent::MessageAgent_HttpRequestComplete(FHttpRequestPtr HttpRequest
 		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(ResponseString);
 		if (FJsonSerializer::Deserialize(Reader, JsonValue)) {
 			if (JsonValue->Type == EJson::Array) {
+				if(JsonValue->AsArray().Num() == 0){ //this happens if you send nothing, sometimes
+					OnMessageAgentCompleted.Broadcast(true, FString(), FString(), FString()); //was a success, but nothing comes through
+					return;
+				}
 				TSharedPtr<FJsonValue> MessageData = JsonValue->AsArray()[0];
-				FString User = MessageData->AsObject()->GetStringField(TEXT("user"));
+				FString RespondingUser = MessageData->AsObject()->GetStringField(TEXT("user"));
 				FString Text = MessageData->AsObject()->GetStringField(TEXT("text"));
 				FString Action = MessageData->AsObject()->GetStringField(TEXT("action"));
 
-				OnMessageAgentCompleted.Broadcast(true, User, Text, Action);
+				OnMessageAgentCompleted.Broadcast(true, RespondingUser, Text, Action);
 				return;
 			}
 			else {
