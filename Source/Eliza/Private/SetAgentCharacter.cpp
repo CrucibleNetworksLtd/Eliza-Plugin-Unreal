@@ -33,7 +33,7 @@ void USetAgentCharacter::Activate()
 		AgentID = AgentCharacter.id; //Get the ID from the given data struct
 	}
 
-	FString requestURL = ElizaInstance->GetAPIUrl() + AgentID + "/set";
+	FString requestURL = ElizaInstance->GetAPIUrl() + "Agents/" + AgentID + "/set";
 
 	TArray<TPair<FString, FString>> Headers;
 	Headers.Add(TPair<FString, FString>{"content-type", "application/json"});
