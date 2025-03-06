@@ -39,8 +39,9 @@ class ELIZA_API UGetAgents : public UBlueprintAsyncActionBase
 public:
 	/**
 	 * Returns an array of all the agents running in your Eliza instance.
+	 * @param ElizaInstance The Eliza instance that we should be communicating with. This can either be a ElizaInstance game asset created in the content browser, or created on the fly with the CreateElizaInstance method.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", KeyWords = "Eliza Character Agent"), Category = "Eliza")
 	static UGetAgents* GetAgents(UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;

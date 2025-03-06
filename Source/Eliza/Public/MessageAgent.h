@@ -20,8 +20,9 @@ public:
 	 * @param AgentId The ID string of the agent to send the message to.
 	 * @param Message The message to send to the agent.
 	 * @param Speaker The user that spoke the message you're sending. Leave blank to be the default user.
+	 * @param ElizaInstance The Eliza instance that we should be communicating with. This can either be a ElizaInstance game asset created in the content browser, or created on the fly with the CreateElizaInstance method.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", KeyWords = "Eliza Character Agent"), Category = "Eliza")
 	static UMessageAgent* MessageAgent(FString AgentId, FString Message, FString Speaker, UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;

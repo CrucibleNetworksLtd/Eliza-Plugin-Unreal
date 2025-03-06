@@ -19,8 +19,9 @@ public:
 	/**
 	 * Given an AgentId, returns details about a the character that agent is representing from its character file.
 	 * @param AgentId The ID string of the agent to get the character data of.
+	 * @param ElizaInstance The Eliza instance that we should be communicating with. This can either be a ElizaInstance game asset created in the content browser, or created on the fly with the CreateElizaInstance method.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", KeyWords = "Eliza Character Agent"), Category = "Eliza")
 	static UGetAgentCharacter* GetAgentCharacter(FString AgentId, UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;
