@@ -123,6 +123,9 @@ struct FAgentDetailsCharacterSetting
   UPROPERTY(Category="JSON|AgentDetails|setting", EditAnywhere, BlueprintReadWrite)
   FAgentDetailsCharacterSettingsVoice voice;
 
+  UPROPERTY(Category = "JSON|AgentDetails|setting", EditAnywhere, BlueprintReadWrite)
+  TMap<FString,FString> secrets;
+
   FAgentDetailsCharacterSetting() {};
 
   FAgentDetailsCharacterSetting( FAgentDetailsCharacterSettingsVoice _voice ){
@@ -151,8 +154,9 @@ struct FAgentDetailsCharacter
   UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
   FAgentDetailsCharacterSetting settings;
 
-  UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
-  FString system;
+  //Appears to be not used by anything, removing for now
+  //UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
+  //FString system;
 
   UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
   TArray<FString> bio;
@@ -180,13 +184,13 @@ struct FAgentDetailsCharacter
 
   FAgentDetailsCharacter() {};
 
-  FAgentDetailsCharacter( FString _name, FString _username, FString _modelProvider, FAgentDetailsCharacterSetting _settings, FString _system, TArray<FString> _bio, TArray<FString> _lore, TArray<FAgentDetailsCharacterMessageCombination> _messageExamples, TArray<FString> _postExamples, TArray<FString> _topics, FAgentDetailsCharacterStyle _style, TArray<FString> _adjectives, FString _id ){
+  FAgentDetailsCharacter( FString _name, FString _username, FString _modelProvider, FAgentDetailsCharacterSetting _settings, /*FString _system,*/ TArray<FString> _bio, TArray<FString> _lore, TArray<FAgentDetailsCharacterMessageCombination> _messageExamples, TArray<FString> _postExamples, TArray<FString> _topics, FAgentDetailsCharacterStyle _style, TArray<FString> _adjectives, FString _id) {
 
     name = _name;
     username = _username;
     modelProvider = _modelProvider;
     settings = _settings;
-    system = _system;
+    //system = _system;
     bio = _bio;
     lore = _lore;
     messageExamples = _messageExamples;
