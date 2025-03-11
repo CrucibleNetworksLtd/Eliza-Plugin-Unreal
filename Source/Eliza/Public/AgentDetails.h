@@ -123,6 +123,9 @@ struct FAgentDetailsCharacterSetting
   UPROPERTY(Category="JSON|AgentDetails|setting", EditAnywhere, BlueprintReadWrite)
   FAgentDetailsCharacterSettingsVoice voice;
 
+  UPROPERTY(Category = "JSON|AgentDetails|setting", EditAnywhere, BlueprintReadWrite)
+  TMap<FString,FString> secrets;
+
   FAgentDetailsCharacterSetting() {};
 
   FAgentDetailsCharacterSetting( FAgentDetailsCharacterSettingsVoice _voice ){
@@ -151,8 +154,9 @@ struct FAgentDetailsCharacter
   UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
   FAgentDetailsCharacterSetting settings;
 
-  UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
-  FString system;
+  //Appears to be not used by anything, removing for now
+  //UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
+  //FString system;
 
   UPROPERTY(Category="JSON|AgentDetails|character", EditAnywhere, BlueprintReadWrite)
   TArray<FString> bio;
@@ -180,13 +184,13 @@ struct FAgentDetailsCharacter
 
   FAgentDetailsCharacter() {};
 
-  FAgentDetailsCharacter( FString _name, FString _username, FString _modelProvider, FAgentDetailsCharacterSetting _settings, FString _system, TArray<FString> _bio, TArray<FString> _lore, TArray<FAgentDetailsCharacterMessageCombination> _messageExamples, TArray<FString> _postExamples, TArray<FString> _topics, FAgentDetailsCharacterStyle _style, TArray<FString> _adjectives, FString _id ){
+  FAgentDetailsCharacter( FString _name, FString _username, FString _modelProvider, FAgentDetailsCharacterSetting _settings, /*FString _system,*/ TArray<FString> _bio, TArray<FString> _lore, TArray<FAgentDetailsCharacterMessageCombination> _messageExamples, TArray<FString> _postExamples, TArray<FString> _topics, FAgentDetailsCharacterStyle _style, TArray<FString> _adjectives, FString _id) {
 
     name = _name;
     username = _username;
     modelProvider = _modelProvider;
     settings = _settings;
-    system = _system;
+    //system = _system;
     bio = _bio;
     lore = _lore;
     messageExamples = _messageExamples;
@@ -196,6 +200,26 @@ struct FAgentDetailsCharacter
     adjectives = _adjectives;
     id = _id;
   
+  }
+
+  TSharedPtr<FJsonObject> FAgentDetailsCharacterToJson() {
+      TSharedPtr<FJsonObject> Json = FJsonObjectConverter::UStructToJsonObject<FAgentDetailsCharacter>(*this);
+
+      TArray<TSharedPtr<FJsonValue>> MessageExamplesArray;
+      for (auto Example : this->messageExamples) {
+          TArray<TSharedPtr<FJsonValue>> ExampleArray;
+          for (auto Message : Example.Combination) {
+              auto MessageJson = FJsonObjectConverter::UStructToJsonObject<FAgentDetailsCharacterMessageExample>(Message);
+              ExampleArray.Add(MakeShareable(new FJsonValueObject(MessageJson)));
+          }
+          if (ExampleArray.Num() > 0) {
+              MessageExamplesArray.Add(MakeShareable(new FJsonValueArray(ExampleArray)));
+          }
+      }
+
+      Json->SetArrayField(TEXT("messageExamples"), MessageExamplesArray);
+
+      return Json;
   }
   
   FAgentDetailsCharacter(FString _json_) {
@@ -228,16 +252,17 @@ struct FAgentDetailsCharacter
   }
 };
 
-USTRUCT(Category="JSON|AgentDetails", BlueprintType)
+//This is effective a hidden type, used only for deserialzing json returned from eliza to pull out the FAgentDetailsCharacter part.
+USTRUCT()
 struct FAgentDetails
 {
 
   GENERATED_BODY()
 
-  UPROPERTY(Category="JSON|AgentDetails|AgentDetail", EditAnywhere, BlueprintReadWrite)
+  UPROPERTY()
   FString id;
 
-  UPROPERTY(Category="JSON|AgentDetails|AgentDetail", EditAnywhere, BlueprintReadWrite)
+  UPROPERTY()
   FAgentDetailsCharacter character;
 
   FAgentDetails() {};
@@ -248,14 +273,25 @@ struct FAgentDetails
     character = _character;
   
   }
-  
-  /* Don't Forget to setup your project
-  Add #include "Runtime/JsonUtilities/Public/JsonObjectConverter.h" in 
-  file with this structs.
-  Also you need add "Json", "JsonUtilities" in Build.cs */
 
   TSharedPtr<FJsonObject> FAgentDetailsToJson() {
-      return FJsonObjectConverter::UStructToJsonObject<FAgentDetails>(*this);
+      TSharedPtr<FJsonObject> Json = FJsonObjectConverter::UStructToJsonObject<FAgentDetails>(*this);
+      
+      TArray<TSharedPtr<FJsonValue>> MessageExamplesArray;
+      for (auto Example : this->character.messageExamples) {
+          TArray<TSharedPtr<FJsonValue>> ExampleArray;
+          for (auto Message : Example.Combination) {
+              auto MessageJson = FJsonObjectConverter::UStructToJsonObject<FAgentDetailsCharacterMessageExample>(Message);
+              ExampleArray.Add(MakeShareable(new FJsonValueObject(MessageJson)));
+          }
+          if (ExampleArray.Num() > 0) {
+              MessageExamplesArray.Add(MakeShareable(new FJsonValueArray(ExampleArray)));
+          }
+      }
+
+      Json->GetObjectField(TEXT("character"))->SetArrayField(TEXT("messageExamples"), MessageExamplesArray);
+
+      return Json;
   }
 
   FAgentDetails(FString _json_){

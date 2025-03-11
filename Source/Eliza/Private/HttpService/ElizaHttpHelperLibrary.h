@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/Engine.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Misc/EngineVersion.h"
@@ -13,20 +13,24 @@
 #include "Misc/EngineVersionComparison.h"
 #include "Eliza.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Engine/GameInstance.h"
 #include "ElizaHttpHelperLibrary.generated.h"
 
 UCLASS()
-class ELIZA_API UElizaHttpHelperLibrary : public UBlueprintFunctionLibrary
+class ELIZA_API UElizaHttpHelperLibrary : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
+private:
+	TArray<TSharedRef<IHttpRequest, ESPMode::ThreadSafe>> ActiveRequests;
 
 public:
 
-	UFUNCTION()
-	static FString GetElizaStarterUrl() {
-		FString Location = "http://localhost:3000"; //default
-		GConfig->GetString(TEXT("/Script/ElizaEditor.ElizaPluginSettings"), TEXT("ElizaHttpServerLocation"), Location, GGameIni);
-		return Location;
+	virtual void Deinitialize() override {
+		Super::Deinitialize();
+		for (FHttpRequestRef Request : ActiveRequests) {
+			Request->OnProcessRequestComplete().Unbind();
+			Request->CancelRequest();
+		}
 	}
 
 	template<typename T>
@@ -36,20 +40,20 @@ public:
 
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
 
-		/*if (GEngine && static_cast<UObject*>(FunctionBindObject)) {
+		if (GEngine && static_cast<UObject*>(FunctionBindObject)) {
 			UObject* WorldContextObject = static_cast<UObject*>(FunctionBindObject);
 			if (WorldContextObject) {
 				UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::ReturnNull);
 				if (
 					World && //get the world
 					World->GetGameInstance()) { //if we actually got a world, get the game instance
-					UElizaEVMServerSubsystem* ElizaSubsystem = World->GetGameInstance()->GetSubsystem<UElizaEVMServerSubsystem>();
+					UElizaHttpHelperLibrary* ElizaSubsystem = UGameInstance::GetSubsystem<UElizaHttpHelperLibrary>(World->GetGameInstance());
 					if (ElizaSubsystem) {
 						ElizaSubsystem->ActiveRequests.Add(HttpRequest);
 					}
 				};
 			}
-		}*/
+		}
 
 		if (FunctionBindFunction && FunctionBindObject) {
 			HttpRequest->OnProcessRequestComplete().BindUObject(FunctionBindObject, FunctionBindFunction);

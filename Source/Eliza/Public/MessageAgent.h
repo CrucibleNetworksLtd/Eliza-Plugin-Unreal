@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "Interfaces/IHttpRequest.h"
+#include "ElizaInstance.h"
 #include "MessageAgent.generated.h"
 
 
@@ -18,9 +19,11 @@ public:
 	 * Sends a message to an agent.
 	 * @param AgentId The ID string of the agent to send the message to.
 	 * @param Message The message to send to the agent.
+	 * @param Speaker The user that spoke the message you're sending. Leave blank to be the default user.
+	 * @param ElizaInstance The Eliza instance that we should be communicating with. This can either be a ElizaInstance game asset created in the content browser, or created on the fly with the CreateElizaInstance method.
 	 */
-	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"), Category = "Eliza")
-	static UMessageAgent* MessageAgent(FString AgentId, FString Message);
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", KeyWords = "Eliza Character Agent"), Category = "Eliza")
+	static UMessageAgent* MessageAgent(FString AgentId, FString Message, FString Speaker, UElizaInstance* ElizaInstance);
 
 	virtual void Activate() override;
 
@@ -31,5 +34,7 @@ public:
 private:
 	void MessageAgent_HttpRequestComplete(FHttpRequestPtr HttpRequest, FHttpResponsePtr HttpResponse, bool bSucceeded);
 
-	FString AgentId, Message;
+	FString AgentId, Message, Speaker;
+
+	UElizaInstance* ElizaInstance;
 };
